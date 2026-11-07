@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nome Studio | Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#fff;
+    --ink-soft:rgba(255,255,255,.7);
+    --bg:#000;
+    --font:"Archivo",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--bg);scroll-snap-type:y proximity}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  a:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+
+  /* ---------- Header ---------- */
+  .site-header{
+    position:fixed;inset:0 0 auto 0;z-index:10;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:22px clamp(18px,3vw,40px);
+    mix-blend-mode:difference;
+    font-weight:600;font-size:15px;letter-spacing:.01em;
+  }
+  .site-header nav{display:flex;gap:28px}
+  .site-header a:hover{opacity:.6}
+
+  /* ---------- Intro: panoramica -> primo lavoro ---------- */
+  .intro{position:relative;height:320vh}
+  .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+  .grid{
+    position:absolute;left:0;top:0;
+    width:1280px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+    transform-origin:0 0;
+    will-change:transform;
+  }
+  .tile{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:6px;background:#111}
+  .tile:not(:first-child){opacity:var(--others,1)}
+  .tile video,.work video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .tile .cap{
+    position:absolute;left:14px;bottom:12px;z-index:1;
+    font-size:15px;font-weight:600;
+    text-shadow:0 1px 8px rgba(0,0,0,.6);
+  }
+
+  .stage-title{
+    position:absolute;left:clamp(18px,3vw,40px);bottom:clamp(24px,5vh,56px);z-index:2;
+    opacity:0;pointer-events:none;
+  }
+  .hint{
+    position:absolute;left:50%;bottom:22px;z-index:2;transform:translateX(-50%);
+    font-size:14px;color:var(--ink-soft);
+  }
+
+  /* ---------- Lavori a schermo intero ---------- */
+  .work{
+    position:relative;height:100vh;height:100svh;overflow:hidden;
+    scroll-snap-align:start;scroll-snap-stop:always;
+    background:#111;
+  }
+  .work::after,.stage-shade{
+    content:"";position:absolute;inset:auto 0 0 0;height:45%;
+    background:linear-gradient(to top,rgba(0,0,0,.65),transparent);
+    pointer-events:none;
+  }
+  .stage-shade{z-index:1;opacity:0}
+  .work .info{
+    position:absolute;left:clamp(18px,3vw,40px);right:clamp(18px,3vw,40px);
+    bottom:clamp(24px,5vh,56px);z-index:2;
+  }
+  .client{font-size:15px;font-weight:600;color:var(--ink-soft);margin-bottom:8px}
+  .title{
+    font-weight:800;font-size:clamp(28px,5.2vw,84px);
+    line-height:1;letter-spacing:-.03em;max-width:18ch;
+  }
+
+  /* ---------- Chiusura ---------- */
+  .contact{
+    min-height:70vh;display:flex;flex-direction:column;justify-content:space-between;
+    padding:clamp(40px,8vh,96px) clamp(18px,3vw,40px) 28px;
+    scroll-snap-align:start;
+  }
+  .contact h2{font-weight:800;font-size:clamp(36px,8vw,140px);line-height:.95;letter-spacing:-.04em}
+  .contact h2 a:hover{opacity:.6}
+  .contact footer{display:flex;flex-wrap:wrap;gap:12px 40px;justify-content:space-between;font-size:14px;color:var(--ink-soft)}
+
+  /* ---------- Mobile ---------- */
+  @media (max-width:700px){
+    .grid{width:760px;grid-template-columns:repeat(2,1fr)}
+    .intro{height:280vh}
+    .site-header nav{gap:18px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-snap-type:none}
+    .intro{height:100vh}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="#top">Nome Studio</a>
+  <nav>
+    <a href="#lavori">Lavori</a>
+    <a href="#contatti">Contatti</a>
+  </nav>
+</header>
+
+<main id="top">
+  <!-- Panoramica che si trasforma nel primo lavoro -->
+  <section class="intro" id="intro" aria-label="Panoramica dei lavori">
+    <div class="stage">
+      <div class="grid" id="grid"></div>
+      <div class="stage-shade" id="stageShade"></div>
+      <div class="stage-title" id="stageTitle"></div>
+      <p class="hint" id="hint">Scorri per entrare nei lavori</p>
+    </div>
+  </section>
+
+  <!-- Gli altri lavori, uno per schermata -->
+  <div id="lavori"></div>
+
+  <section class="contact" id="contatti">
+    <h2><a href="mailto:info@tuostudio.it">Parliamo del<br>tuo progetto</a></h2>
+    <footer>
+      <span>Nome Studio Srl · Via Esempio 1, 00000 Città</span>
+      <span><a href="mailto:info@tuostudio.it">info@tuostudio.it</a></span>
+      <span><a href="https://vimeo.com/" rel="noopener">Vimeo</a> <a href="https://instagram.com/" rel="noopener">Instagram</a> <a href="https://linkedin.com/" rel="noopener">LinkedIn</a></span>
+    </footer>
+  </section>
+</main>
+
+<script>
+/* ============================================================
+   MODIFICA QUI I TUOI LAVORI
+   video:  percorso del file .mp4 (consigliato H.264, senza audio, 1080p)
+   poster: immagine mostrata mentre il video carica (opzionale)
+   ============================================================ */
+const WORKS = [
+  { client:"Cliente 1", title:"Titolo del progetto uno",   video:"video/lavoro-1.mp4", poster:"" },
+  { client:"Cliente 2", title:"Titolo del progetto due",   video:"video/lavoro-2.mp4", poster:"" },
+  { client:"Cliente 3", title:"Titolo del progetto tre",   video:"video/lavoro-3.mp4", poster:"" },
+  { client:"Cliente 4", title:"Titolo del progetto quattro", video:"video/lavoro-4.mp4", poster:"" },
+  { client:"Cliente 5", title:"Titolo del progetto cinque", video:"video/lavoro-5.mp4", poster:"" },
+  { client:"Cliente 6", title:"Titolo del progetto sei",   video:"video/lavoro-6.mp4", poster:"" },
+  { client:"Cliente 7", title:"Titolo del progetto sette", video:"video/lavoro-7.mp4", poster:"" },
+  { client:"Cliente 8", title:"Titolo del progetto otto",  video:"video/lavoro-8.mp4", poster:"" },
+  { client:"Cliente 9", title:"Titolo del progetto nove",  video:"video/lavoro-9.mp4", poster:"" }
+];
+
+/* ---------- Costruzione del DOM ---------- */
+const grid = document.getElementById('grid');
+const list = document.getElementById('lavori');
+const stageTitle = document.getElementById('stageTitle');
+const stageShade = document.getElementById('stageShade');
+
+function makeVideo(w){
+  const v = document.createElement('video');
+  v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata';
+  v.setAttribute('muted',''); v.setAttribute('playsinline','');
+  if (w.poster) v.poster = w.poster;
+  if (w.video) v.src = w.video;
+  return v;
+}
+function fallback(el,i){
+  /* sfondo colorato se il video non è ancora disponibile */
+  const h = (i * 41 + 200) % 360;
+  el.style.background = `linear-gradient(135deg,hsl(${h} 35% 22%),hsl(${(h+50)%360} 40% 10%))`;
+}
+function infoHTML(w){
+  return `<p class="client">${w.client}</p><h2 class="title">${w.title}</h2>`;
+}
+
+WORKS.forEach((w,i)=>{
+  const tile = document.createElement('div');
+  tile.className = 'tile';
+  fallback(tile,i);
+  tile.appendChild(makeVideo(w));
+  const cap = document.createElement('span');
+  cap.className = 'cap'; cap.textContent = w.client;
+  tile.appendChild(cap);
+  grid.appendChild(tile);
+
+  if (i === 0){
+    stageTitle.innerHTML = infoHTML(w);
+  } else {
+    const sec = document.createElement('section');
+    sec.className = 'work';
+    sec.setAttribute('aria-label', w.title);
+    fallback(sec,i);
+    sec.appendChild(makeVideo(w));
+    const info = document.createElement('div');
+    info.className = 'info';
+    info.innerHTML = infoHTML(w);
+    sec.appendChild(info);
+    list.appendChild(sec);
+  }
+});
+
+/* ---------- Zoom dalla panoramica al primo lavoro ---------- */
+const intro = document.getElementById('intro');
+const hint = document.getElementById('hint');
+let vw, vh, gw, gh, tc, s0, s1;
+const clamp = (x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const smooth = t => t*t*(3-2*t);
+
+function measure(){
+  vw = innerWidth; vh = innerHeight;
+  gw = grid.offsetWidth; gh = grid.offsetHeight;
+  const t = grid.children[0];
+  tc = { x:t.offsetLeft + t.offsetWidth/2, y:t.offsetTop + t.offsetHeight/2 };
+  s0 = Math.min(vw/gw, (vh*.88)/gh) * .94;               // tutta la griglia in vista
+  s1 = Math.max(vw/t.offsetWidth, vh/t.offsetHeight) * 1.002; // il primo video copre lo schermo
+  update();
+}
+function update(){
+  const range = Math.max(1, intro.offsetHeight - vh);
+  const p = clamp(-intro.getBoundingClientRect().top / range);
+  const e = smooth(p);
+  const s = s0 * Math.pow(s1/s0, e);                      // zoom progressivo
+  const fx = gw/2 + (tc.x - gw/2) * e;
+  const fy = gh/2 + (tc.y - gh/2) * e;
+  grid.style.transform = `translate(${vw/2}px,${vh/2}px) scale(${s}) translate(${-fx}px,${-fy}px)`;
+  grid.style.setProperty('--others', 1 - clamp((p-.35)/.4));
+  const t = clamp((p-.82)/.18);
+  stageTitle.style.opacity = t;
+  stageShade.style.opacity = t;
+  hint.style.opacity = 1 - clamp(p/.15);
+  grid.children[0].style.borderRadius = (6 * (1-e)) + 'px';
+}
+addEventListener('scroll', ()=>requestAnimationFrame(update), {passive:true});
+addEventListener('resize', measure);
+addEventListener('load', measure);
+measure();
+
+/* ---------- Riproduci solo i video visibili ---------- */
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    en.target.querySelectorAll('video').forEach(v=>{
+      if (en.isIntersecting) v.play().catch(()=>{}); else v.pause();
+    });
+  });
+},{threshold:.2});
+io.observe(intro);
+document.querySelectorAll('.work').forEach(el=>io.observe(el));
+/* nella panoramica tutti i video della griglia partono insieme */
+grid.querySelectorAll('video').forEach(v=>v.play().catch(()=>{}));
+</script>
+</body>
+</html>
